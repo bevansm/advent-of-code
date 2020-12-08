@@ -1,16 +1,14 @@
 {
-  "name": "scratch",
+  "name": "advent-of-code",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "selfbot": "nodenv selfbot.mjs"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^12.2.0",
     "heap": "^0.2.6",
     "lodash": "^4.17.20",
     "math": "0.0.3",

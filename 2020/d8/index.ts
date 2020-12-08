@@ -1,25 +1,14 @@
-import fs from 'fs';
 import path from 'path';
-import { Instruction, Command, execute } from '../simulator/Simulator';
+import Simulator, { Instruction, Command, parseInstructionFile } from '../simulator/Simulator';
 
-const input: Instruction[] = fs
-  .readFileSync(path.join(__dirname, 'input.txt'))
-  .toString()
-  .split('\n')
-  .map(v => {
-    const [cmd, rawVal] = v.split(' ') as [Command, string];
-    return { cmd, val: parseInt(rawVal) };
-  });
+const input: Instruction[] = parseInstructionFile(path.join(__dirname, 'input.txt'));
 
 function part1(arr: Instruction[]) {
-  const visited = new Set<number>();
-  const state = { rsp: 0, acc: 0 };
-  while (state.rsp < arr.length) {
-    if (visited.has(state.rsp)) break;
-    visited.add(state.rsp);
-    execute(arr[state.rsp], state);
-  }
-  return state.acc;
+  const sim = new Simulator(arr);
+  try {
+    sim.run();
+  } catch (e) {}
+  return sim.state.acc;
 }
 
 function flipCommand(i: Instruction) {
@@ -29,26 +18,23 @@ function flipCommand(i: Instruction) {
 
 function part2(arr: Instruction[]) {
   for (let i = 0; i < arr.length; i++) {
-    // If this is equal to a command where we can't branch, continue
+    // If this is a command where we can't branch, continue
     if (arr[i].cmd === Command.ACC) continue;
 
     // If we can branch, flip the command
     flipCommand(arr[i]);
 
     // Try to run the program through w/ the new commands
-    const visited = new Set<number>();
-    const state = { rsp: 0, acc: 0 };
-    while (state.rsp < arr.length) {
-      if (visited.has(state.rsp)) break;
-      visited.add(state.rsp);
-      execute(arr[state.rsp], state);
+    const sim = new Simulator(arr);
+    try {
+      sim.run();
+    } catch (e) {
+      flipCommand(arr[i]);
+      continue;
     }
 
-    // Cleanup the branch commands
     flipCommand(arr[i]);
-
-    // If we've reached the end, return the value of acc
-    if (state.rsp >= arr.length) return state.acc;
+    return sim.state.acc;
   }
 
   throw new Error('Unable to find an execution path through the given code.');
