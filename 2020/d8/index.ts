@@ -1,17 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { cloneDeep } from 'lodash';
-
-enum Command {
-  NOP = 'nop',
-  ACC = 'acc',
-  JMP = 'jmp',
-}
-
-interface Instruction {
-  cmd: Command;
-  val: number;
-}
+import { Instruction, Command, execute } from '../simulator/Simulator';
 
 const input: Instruction[] = fs
   .readFileSync(path.join(__dirname, 'input.txt'))
@@ -21,26 +10,6 @@ const input: Instruction[] = fs
     const [cmd, rawVal] = v.split(' ') as [Command, string];
     return { cmd, val: parseInt(rawVal) };
   });
-
-interface State {
-  acc: number;
-  rsp: number;
-}
-
-function execute(i: Instruction, state: State) {
-  const { cmd, val } = i;
-  switch (cmd) {
-    case Command.JMP:
-      state.rsp += val;
-      break;
-    case Command.ACC:
-      state.acc += val;
-    case Command.NOP:
-      state.rsp++;
-    default:
-      break;
-  }
-}
 
 function part1(arr: Instruction[]) {
   const visited = new Set<number>();
