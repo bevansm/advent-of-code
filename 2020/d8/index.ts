@@ -8,7 +8,7 @@ function part1(arr: Instruction[]) {
   try {
     sim.run();
   } catch (e) {}
-  return sim.state.acc;
+  return sim.acc;
 }
 
 function flipCommand(i: Instruction) {
@@ -34,7 +34,7 @@ function part2(arr: Instruction[]) {
     }
 
     flipCommand(arr[i]);
-    return sim.state.acc;
+    return sim.acc;
   }
 
   throw new Error('Unable to find an execution path through the given code.');

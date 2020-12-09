@@ -11,11 +11,6 @@ export interface Instruction {
   val: number;
 }
 
-interface State {
-  acc: number;
-  rsp: number;
-}
-
 export const parseInstructionFile = (path: string): Instruction[] =>
   fs
     .readFileSync(path)
@@ -27,7 +22,8 @@ export const parseInstructionFile = (path: string): Instruction[] =>
     });
 
 export class Simulator {
-  public state: State;
+  public rsp: number;
+  public acc: number;
   private instructions: Instruction[];
   private visited: Set<number>;
   private loop: boolean;
@@ -41,16 +37,17 @@ export class Simulator {
       this.instructions = instructionSet;
     }
 
-    this.state = { rsp: 0, acc: 0 };
+    this.rsp = 0;
+    this.acc = 0;
     this.visited = new Set();
     this.loop = loop;
   }
 
   public run() {
-    while (this.state.rsp < this.instructions.length) {
-      if (this.visited.has(this.state.rsp) && !this.loop) throw new Error('Unable to execute program without looping');
-      this.visited.add(this.state.rsp);
-      this.execute(this.instructions[this.state.rsp]);
+    while (this.rsp < this.instructions.length) {
+      if (this.visited.has(this.rsp) && !this.loop) throw new Error('Unable to execute program without looping');
+      this.visited.add(this.rsp);
+      this.execute(this.instructions[this.rsp]);
     }
   }
 
@@ -58,12 +55,12 @@ export class Simulator {
     const { cmd, val } = i;
     switch (cmd) {
       case Command.JMP:
-        this.state.rsp += val;
+        this.rsp += val;
         break;
       case Command.ACC:
-        this.state.acc += val;
+        this.acc += val;
       case Command.NOP:
-        this.state.rsp++;
+        this.rsp++;
       default:
         break;
     }
